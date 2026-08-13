@@ -82,6 +82,28 @@ userSchema.pre<IUser>("save", async function (next) {
 });
 
 
+
+userSchema.methods.getJWTToken = function (): string {
+  const jwtSecret = process.env.JWT_SECRET;
+  const expiresIn = (process.env.JWT_EXPIRE ?? "7d") as jwt.SignOptions["expiresIn"];
+
+  if (!jwtSecret) {
+    throw new Error("JWT_SECRET is not defined");
+  }
+
+  return jwt.sign(
+    {
+      id: this._id.toString(),
+      email: this.email,
+    },
+    jwtSecret,
+    {
+      expiresIn,
+    }
+  );
+};
+
+
 /**
  * Compare password
  */
