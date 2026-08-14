@@ -66,3 +66,15 @@ npm run dev
 ```
 
 ## Once running, open your browser and go to: http://localhost:3000 to view the app locally.
+
+
+
+
+## Further changes to consider 
+* create a auth root in a layout.tsx so the auth status does not need to be checked in each page
+* look at using a middleware.ts file so all redirects can be done on the server side 
+
+
+## Changes I chose to make 
+* removed getCookies from the user controller as RCE is a sercurity risk 
+* no longer retuen the token in the json response as this handled by the browser 
