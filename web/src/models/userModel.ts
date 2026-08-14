@@ -85,7 +85,7 @@ userSchema.pre<IUser>("save", async function (next) {
 
 userSchema.methods.getJWTToken = function (): string {
   const jwtSecret = process.env.JWT_SECRET;
-  const expiresIn = (process.env.JWT_EXPIRE ?? "7d") as jwt.SignOptions["expiresIn"];
+  const expiresIn = (process.env.JWT_EXPIRE ?? "1h") as jwt.SignOptions["expiresIn"];
 
   if (!jwtSecret) {
     throw new Error("JWT_SECRET is not defined");
