@@ -1,7 +1,6 @@
-const baseUrl =
-  process.env.NODE_ENV === 'production'
-    ? ''
-    : 'http://localhost:4000';
+const baseUrl = process.env.NODE_ENV === 'production' ? '' : 'http://127.0.0.1:4000';
+
+    console.log({ baseUrl });
 
 export interface ApiResponse {
   success: boolean;

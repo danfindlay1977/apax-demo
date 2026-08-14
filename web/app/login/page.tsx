@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { loginApi } from '@/lib/services/login.api';
 
+
 export default function LoginPage() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
@@ -20,27 +21,22 @@ export default function LoginPage() {
   const [vaultOpening, setVaultOpening] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState<boolean>(false)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    // setIsLoading(true)
+    setError(false)
+    setIsLoading(true)
     const res = await loginApi({ email, password })
-    console.log(res)
-    //NEED TO CLEAN UP ONCE ALL DONE, didn't get time due to mongodb connection issue.
-    // Simulate authentication delay
-    // await new Promise(resolve => setTimeout(resolve, 1000))
+    setIsLoading(false)
 
-    // Trigger vault door animation
-    // setVaultOpening(true)
+    if (!res.success) {
+      setError(true)
+      return
 
-    // Navigate after animation
-    // await new Promise(resolve => setTimeout(resolve, 1000))
-    // router.push('/dashboard')
-    if(res.data) {
-      router.push('/dashbaord')
-    } else {
-      alert('Something went wrong')
     }
+
+    router.push('/dashboard')
   }
 
   const handleWalletConnect = async () => {
@@ -217,7 +213,10 @@ export default function LoginPage() {
                       type="email"
                       placeholder="client@apax.institutional"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => {
+                        setEmail(e.target.value)
+                        if (error) setError(false)
+                      }}
                       className="pl-10 bg-[#1A1A1A] border-[#2A2A2A] text-[#E8E8E8] placeholder:text-[#888888] focus:border-[#D4AF37] focus:ring-[#D4AF37]/20"
                       required
                     />
@@ -233,7 +232,10 @@ export default function LoginPage() {
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Enter your password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        setPassword(e.target.value)
+                        if (error) setError(false)
+                      }}
                       className="pl-10 pr-10 bg-[#1A1A1A] border-[#2A2A2A] text-[#E8E8E8] placeholder:text-[#888888] focus:border-[#D4AF37] focus:ring-[#D4AF37]/20"
                       required
                     />
@@ -246,6 +248,10 @@ export default function LoginPage() {
                     </button>
                   </div>
                 </div>
+
+                {error && (
+                  <p className="text-sm text-red-400">Username or password is incorrect.</p>
+                )}
 
                 <div className="flex items-center justify-between text-sm">
                   <label className="flex items-center gap-2 text-[#888888]">
