@@ -2,7 +2,7 @@
 
 import React from "react"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -12,7 +12,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { loginApi } from '@/lib/services/login.api';
-
+import { useToast } from '@/hooks/use-toast'
+import { useAuth } from '@/hooks/use-auth'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -22,14 +23,23 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<boolean>(false)
+  const { toast } = useToast()
+  const { isAuthenticated } = useAuth()
+
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard')
+    }
+  }, [isAuthenticated, router])
 
   const handleLogin = async (e: React.FormEvent) => {
+    try {
     e.preventDefault()
     setError(false)
     setIsLoading(true)
     const res = await loginApi({ email, password })
     setIsLoading(false)
-
     if (!res.success) {
       setError(true)
       return
@@ -37,6 +47,15 @@ export default function LoginPage() {
     }
 
     router.push('/dashboard')
+    }
+    catch (error) {
+      setIsLoading(false)
+      toast({
+        title: 'Login failed',
+        description: 'An error occurred during login. Please try again.',
+        variant: 'destructive',
+      })
+    }
   }
 
   const handleWalletConnect = async () => {

@@ -11,16 +11,38 @@ import configureCloudinary from "./config/cloudinary";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:3000";
+const FRONTEND_ORIGINS = (process.env.FRONTEND_ORIGINS || process.env.FRONTEND_ORIGIN || "http://localhost:3000")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    // Allow non-browser clients (curl/postman) where Origin header is absent.
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    if (FRONTEND_ORIGINS.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 204,
+  maxAge: 600,
+};
 
 
 
 // Middleware
 app.use(
-  cors({
-    origin: '*',
-    credentials: true,
-  })
+  cors(corsOptions)
 );
 app.use(cookieParser());
 app.use(express.json());

@@ -8,9 +8,13 @@ import { ZakatView } from '@/components/views/zakat-view'
 import { RedemptionView } from '@/components/views/redemption-view'
 import { ShariaView } from '@/components/views/sharia-view'
 import { useAPAXStore } from '@/lib/store'
+import { useRequireAuth } from '@/hooks/use-auth';
 
 export default function DashboardPage() {
   const { activeView, addAuditLog } = useAPAXStore()
+
+  // add this to the correct layout.tsx once we have a layout for the dashboard
+  useRequireAuth()
 
   // Simulate live price updates
   useEffect(() => {

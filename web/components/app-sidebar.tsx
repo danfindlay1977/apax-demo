@@ -12,6 +12,11 @@ import {
 } from '@phosphor-icons/react'
 import Image from 'next/image'
 
+import { useAuth } from '@/hooks/use-auth'
+import { logoutApi } from '@/lib/services/logout.api'
+import {useRouter} from 'next/navigation'
+
+
 import {
   Sidebar,
   SidebarContent,
@@ -26,6 +31,7 @@ import {
   SidebarSeparator
 } from '@/components/ui/sidebar'
 import { useAPAXStore } from '@/lib/store'
+import router from 'next/dist/shared/lib/router/router'
 
 const mainNavItems = [
   {
@@ -68,6 +74,22 @@ const supportItems = [
 
 export function AppSidebar() {
   const { activeView, setActiveView } = useAPAXStore()
+  const { isAuthenticated } = useAuth()
+  const router = useRouter()
+
+  console.log('isAuthenticated >>>>>>>>>>>>>>>>>>>>>>>>:', isAuthenticated)
+
+  const signOutHandler =  async () => {
+    try {
+     if (isAuthenticated) {
+      await logoutApi();
+     }
+     // Redirect to login page after logout
+     router.push('/login')
+   } catch (error) {
+     console.error('Logout failed', error)
+   }
+  }
 
   return (
     <Sidebar className="border-r border-[#2A2A2A] bg-[#0D0D0D]">
@@ -156,7 +178,10 @@ export function AppSidebar() {
               <p className="text-xs text-[#888888] truncate">client@apax.institutional</p>
             </div>
             <button className="p-1.5 rounded-md hover:bg-[#1A1A1A] text-[#888888] hover:text-[#E8E8E8] transition-colors">
-              <SignOut className="h-4 w-4" />
+            {isAuthenticated && (
+                <SignOut className="h-5 w-5" onClick={signOutHandler} />
+               
+            )}
             </button>
           </div>
         </div>
